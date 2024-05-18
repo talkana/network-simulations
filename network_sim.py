@@ -147,8 +147,8 @@ def add_reticulations(tree, rnum, repeat=False):
     return s
 
 
-def simulate(leaves, ret):
-    process = subprocess.Popen(f"Rscript treesim.r -l {leaves}", shell=True, stdout=subprocess.PIPE)
+def simulate(leaves, ret, height):
+    process = subprocess.Popen(f"Rscript treesim.r -l {leaves} -h {height}", shell=True, stdout=subprocess.PIPE)
     (output, error) = process.communicate()
     output = output.decode().split()
     tree_index = output.index("[1]") + 1
@@ -158,8 +158,9 @@ def simulate(leaves, ret):
     if ret < leaves:
         network = add_reticulations(newick, ret, True)
     else:
-        network = add_reticulations(newick, ret, False)
+        network = add_reticulations(newick, ret)
     return network
+
 
 def save_nexus(newlist, path):
     with open(path, "w") as f:
@@ -167,6 +168,7 @@ def save_nexus(newlist, path):
         for i in range(len(newlist)):
             f.write("\ttree " + str(i) + "=" + newlist[i] + ";\n")
         f.write("end;")
+
 
 def parse_input():
     parser = argparse.ArgumentParser(
@@ -176,6 +178,7 @@ def parse_input():
     parser.add_argument('-l', type=int, required=True, help='number of leaves in species network')
     parser.add_argument('-n', type=int, required=True, help='number of species networks to generate')
     parser.add_argument('-d', type=int, required=True, help='number of displayed trees to generate per each network')
+    parser.add_argument('-ht', type=int, required=True, help='height of the network in generations')
     parsed = parser.parse_args()
     return parsed
 
@@ -185,7 +188,7 @@ def main():
     os.mkdir(args.o)
     for n in range(1, args.n + 1):
         reppath = args.o + "/" + str(n)
-        nw = simulate(args.l, args.r)
+        nw = simulate(args.l, args.r, args.ht)
         os.mkdir(reppath)
 
         nwpath = reppath + "/" + "network"
