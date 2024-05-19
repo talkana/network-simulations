@@ -1,4 +1,4 @@
-#!/opt/local/bin/perl -w
+#!/usr/bin/perl
 
 # Perl script to simulate sequence evolution using INDELible along gene trees simulated by SimPhy.
 # It doesn't support input indelible [BRANCHES],[TREE],[EVOLVE] and [PARTITIONS] sections but adds
