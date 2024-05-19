@@ -25,7 +25,7 @@ simulate_trees_and_sequences() {
       for tree_file in $tree_files; do
         reppath=$(dirname "$tree_file")
         simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} -rs ${displayed_trees_per_network} -I ${sp}")
-        indelible_commands+=("perl INDELIble_wrapper.pl ${reppath} ${ip} ${seed} 1")
+        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${ip} ${seed} 1")
       done
     done
   done
