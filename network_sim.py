@@ -151,6 +151,7 @@ def simulate(leaves, ret, height):
     process = subprocess.Popen(f"Rscript treesim.r -l {leaves} -h {height}", shell=True, stdout=subprocess.PIPE)
     (output, error) = process.communicate()
     output = output.decode().split()
+    print(f"Output of R simulations: {output}")
     tree_index = output.index("[1]") + 1
     newick = output[tree_index][1:-2]
     if newick[-1] == "0":
