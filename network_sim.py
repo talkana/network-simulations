@@ -148,7 +148,7 @@ def add_reticulations(tree, rnum, repeat=False):
 
 
 def simulate(leaves, ret, height):
-    process = subprocess.Popen(f"Rscript treesim.r -l {leaves} -h {height}", shell=True, stdout=subprocess.PIPE)
+    process = subprocess.Popen(f"Rscript treesim.r --l {leaves} --h {height}", shell=True, stdout=subprocess.PIPE)
     (output, error) = process.communicate()
     output = output.decode().split()
     print(f"Output of R simulations: {output}")
