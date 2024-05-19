@@ -151,7 +151,6 @@ def simulate(leaves, ret, height):
     process = subprocess.Popen(f"Rscript treesim.r --l {leaves} --h {height}", shell=True, stdout=subprocess.PIPE)
     (output, error) = process.communicate()
     output = output.decode().split()
-    print(f"Output of R simulations: {output}")
     tree_index = output.index("[1]") + 1
     newick = output[tree_index][1:-2]
     if newick[-1] == "0":
@@ -186,22 +185,22 @@ def parse_input():
 
 def main():
     args = parse_input()
-    print(f"Calling python script for folder {args.o}")
     os.mkdir(args.o)
     for n in range(1, args.n + 1):
         reppath = args.o + "/" + str(n)
-        nw = simulate(args.l, args.r, args.ht)
+        network_str = simulate(args.l, args.r, args.ht)
         os.mkdir(reppath)
 
         nwpath = reppath + "/" + "network"
         nwf = open(nwpath, "w")
-        nwf.write(nw)
+        nwf.write(network_str)
         nwf.close()
 
         displayed_trees = []
+        network = Network(str2tree(network_str))
         for i in range(args.d):
             dtree_nr = random.randint(0, 2 ** args.r - 1)
-            dtree = nw.displayedtreebyid(dtree_nr)
+            dtree = network.displayedtreebyid(dtree_nr)
             displayed_trees.append(dtree)
         dpath = reppath + "/" + "displayed_trees"
         save_nexus(displayed_trees, dpath)
