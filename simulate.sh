@@ -40,7 +40,7 @@ main() {
   max_processes=20
   displayed_trees_per_network=250
   mkdir -p "$output_dir"
-#  simulate_networks
+  simulate_networks
   simulate_trees_and_sequences
 }
 
