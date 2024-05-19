@@ -31,7 +31,7 @@ simulate_trees_and_sequences() {
       done
     done
   done
-  cat simphy_commands
+  cat simphy_commands > "simphy_commands.txt"
   printf "%s\n" "${simphy_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
   printf "%s\n" "${indelible_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
 }
