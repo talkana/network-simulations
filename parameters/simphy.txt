@@ -1,0 +1,12 @@
+-rg 1
+-si f:1
+-sp F:200000
+-su E:10000000
+-lb f:0
+-ld f:lb
+-ll 4
+-hs LN:1.5,1
+-hl LN:1.2,1
+-hg LN:1.4,1
+-oc 1
+-v 0
