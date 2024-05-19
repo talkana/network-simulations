@@ -27,10 +27,11 @@ simulate_trees_and_sequences() {
       for tree_file in $tree_files; do
         reppath=$(dirname "$tree_file")
         simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} ${simphy_args}")
-        indelible_commands+=("INDELIble_wrapper.pl ${reppath} ${ip} ${seed} 1")
+        indelible_commands+=("perl INDELIble_wrapper.pl ${reppath} ${ip} ${seed} 1")
       done
     done
   done
+  cat simphy_commands
   printf "%s\n" "${simphy_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
   printf "%s\n" "${indelible_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
 }
