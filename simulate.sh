@@ -5,7 +5,7 @@ mkdir -p "$output_dir"
 
 max_processes=20
 networks_per_parameter_set=10
-displayed_trees_per_network = 250
+displayed_trees_per_network=250
 height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
 network_commands=()
 
