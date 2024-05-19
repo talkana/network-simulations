@@ -22,18 +22,16 @@ simulate_trees_and_sequences() {
   indelible_commands=()
   for sp in "$parameters_path"/*.simphy; do
     for ip in "$parameters_path"/*.simphy; do
-      simphy_args=$(<"$sp")
       tree_files=$(find "$output_dir" -type f -name "*displayed_trees")
       for tree_file in $tree_files; do
         reppath=$(dirname "$tree_file")
-        simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} ${simphy_args}")
+        simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} -I ${sp}")
         indelible_commands+=("perl INDELIble_wrapper.pl ${reppath} ${ip} ${seed} 1")
       done
     done
   done
-  cat simphy_commands > "simphy_commands.txt"
   printf "%s\n" "${simphy_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
-  printf "%s\n" "${indelible_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
+#  printf "%s\n" "${indelible_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
 }
 
 
@@ -42,7 +40,7 @@ main() {
   parameters_path="parameters"
   max_processes=20
   mkdir -p "$output_dir"
-  simulate_networks
+#  simulate_networks
   simulate_trees_and_sequences
 }
 
