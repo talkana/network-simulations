@@ -3,6 +3,7 @@
 simulate_networks() {
   height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
   networks_per_parameter_set=10
+  displayed_trees_per_network=250
   network_commands=()
   for r in 5 10 15 20; do
     for l in 50 100 150 200; do
@@ -25,7 +26,7 @@ simulate_trees_and_sequences() {
       tree_files=$(find "$output_dir" -type f -name "*displayed_trees")
       for tree_file in $tree_files; do
         reppath=$(dirname "$tree_file")
-        simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} -rs ${displayed_trees_per_network} ${simphy_args}")
+        simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} ${simphy_args}")
         indelible_commands+=("INDELIble_wrapper.pl ${reppath} ${ip} ${seed} 1")
       done
     done
@@ -37,10 +38,9 @@ simulate_trees_and_sequences() {
 
 main() {
   output_dir="simulations_bijective"
-  mkdir -p "$output_dir"
-  parameters_path = "parameters"
+  parameters_path="parameters"
   max_processes=20
-  displayed_trees_per_network=250
+  mkdir -p "$output_dir"
   simulate_networks
   simulate_trees_and_sequences
 }
