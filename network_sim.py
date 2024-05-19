@@ -185,6 +185,7 @@ def parse_input():
 
 def main():
     args = parse_input()
+    print(f"Calling python script for folder {args.o}")
     os.mkdir(args.o)
     for n in range(1, args.n + 1):
         reppath = args.o + "/" + str(n)
