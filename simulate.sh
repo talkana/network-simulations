@@ -20,7 +20,7 @@ simulate_trees_and_sequences() {
   simphy_commands=()
   indelible_commands=()
   for sp in "$parameters_path"/*.simphy; do
-    for ip in "$parameters_path"/*.simphy; do
+    for ip in "$parameters_path"/*.indelible; do
       tree_files=$(find "$output_dir" -type f -name "*displayed_trees")
       for tree_file in $tree_files; do
         reppath=$(dirname "$tree_file")
