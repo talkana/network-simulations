@@ -33,6 +33,10 @@ simulate_trees_and_sequences() {
   printf "%s\n" "${indelible_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
 }
 
+infer_trees {
+  find ${output_dir} -type f -name "*.phy" | parallel -j${max_processes} 'outpath={}_tree_ML; ./FastTree -nt -gtr -nosupport {} > $outpath'
+}
+
 
 main() {
   output_dir="simulations_bijective"
@@ -43,6 +47,7 @@ main() {
   mkdir -p "$output_dir"
   simulate_networks
   simulate_trees_and_sequences
+  infer_trees
 }
 
 main
