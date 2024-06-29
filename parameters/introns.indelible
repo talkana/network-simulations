@@ -1,0 +1,11 @@
+// Indelible configuration file with parameters from Molloy and Warnow 2018
+[TYPE] NUCLEOTIDE 1
+[SETTINGS]
+    [fastaextension] fasta
+[SIMPHY-UNLINKED-MODEL] unlinked
+    [submodel] GTR $(d:37,133,20,48,120,29)
+    [statefreq] $(d:55,38,43,63)
+    [rates] 0 $(e:2.5) 0
+
+[SIMPHY-PARTITIONS] complex [1 unlinked $(u:300,1500)]
+[SIMPHY-EVOLVE] 1 dataset
