@@ -34,7 +34,7 @@ simulate_trees_and_sequences() {
 }
 
 infer_trees {
-  find ${output_dir} -type f -name "*.phy" | parallel -j${max_processes} 'outpath={}_tree_ML; ./FastTree -nt -gtr -nosupport {} > $outpath'
+  find ${output_dir} -type f -name "*.phy" | parallel -j ${max_processes} 'outpath={}_tree_ML; ./FastTree -nt -gtr -nosupport {} > $outpath'
 }
 
 
