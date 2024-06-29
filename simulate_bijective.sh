@@ -34,9 +34,34 @@ simulate_trees_and_sequences() {
 }
 
 infer_trees() {
-  find ${output_dir} -type f -name "*.phy" | parallel -j${max_processes} 'outpath={}_tree_ML; ./FastTree -nt -gtr -nosupport {} > $outpath'
+  find ${output_dir} -type f -name "*.phy" | parallel -j${max_processes} 'outpath={}_tree_ML; FastTree -nt -gtr -nosupport {} > $outpath'
 }
 
+newick_cleanup() {
+    # Returns newick tree with deleted edge lengths and changed name from X_i_j to X"""
+    local input_file="$1"
+    local output_file="$2"
+    while IFS= read -r line; do
+        line=$(echo "$line" | sed 's/:[0-9.]\+//g')
+        line=$(echo "$line" | sed -E 's/(t[0-9]+)_[^:(),;]+_[^:(),;]+/\1/g')
+        echo "$line" >> "$gtree_file_out"
+    done < "$input_file"
+}
+
+root_trees() {
+  urec_commands=()
+  gtree_files=$(find "$output_dir" -type f -name "*_tree_ML")
+  for gtree_file in $gtree_files; do
+    gtree_file_out = "${gtree_file%.newick}_cleaned.newick"
+    newick_cleanup "$gtree_file" "$gtree_file_out"
+    dir_path=$(dirname "gtree_file")
+    stree_file="$dir_path/s_tree.trees"
+    stree_file_out = "${stree_file%.trees}_cleaned.newick"
+    newick_cleanup "$stree_file" "$stree_file_out"
+    urec_commands+=("urec -G "{gtree_file_out}" -S "{stree_file_out}" -um -rmp1")
+  done
+  printf "%s\n" "${urec_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
+  }
 
 main() {
   output_dir="simulations_bijective"
@@ -48,6 +73,7 @@ main() {
   simulate_networks
   simulate_trees_and_sequences
   infer_trees
+  root_trees
 }
 
 main
