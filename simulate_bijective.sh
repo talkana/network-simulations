@@ -49,18 +49,24 @@ newick_cleanup() {
 }
 
 root_trees() {
-  urec_commands=()
   gtree_files=$(find "$output_dir" -type f -name "*_tree_ML")
   for gtree_file in $gtree_files; do
+    # file cleanup
     gtree_file_out = "${gtree_file%.newick}_cleaned.newick"
     newick_cleanup "$gtree_file" "$gtree_file_out"
     dir_path=$(dirname "gtree_file")
     stree_file="$dir_path/s_tree.trees"
     stree_file_out = "${stree_file%.trees}_cleaned.newick"
     newick_cleanup "$stree_file" "$stree_file_out"
-    urec_commands+=("urec -G "{gtree_file_out}" -S "{stree_file_out}" -um -rmp1")
+    # rooting
+    urec_command="urec -G "{gtree_file_out}" -S "{stree_file_out}" -um -rmp1"
+    output=$(eval "$urec_command" 2>&1)
+    if [ $? -ne 0 ]; then
+        continue
+    fi
+    rooted_tree=$(echo "$output" | awk '{print $1}')
+    echo "$rooted_tree" > "${gtree_file%.newick}_rooted.newick"
   done
-  printf "%s\n" "${urec_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
   }
 
 main() {
