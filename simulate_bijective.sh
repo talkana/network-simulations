@@ -70,13 +70,6 @@ root_trees() {
   done
 }
 
-delete_dirs_with_no_rooted_trees(){
-  for l in 100 200; do
-    for r in 5 10; do
-      for ils in "moderate" "high"; do
-        base_dir="l${l}_r${r}_ILS_${ils}"
-}
-
 main() {
   output_dir="simulations_bijective"
   parameters_path="parameters"
