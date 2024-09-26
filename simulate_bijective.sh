@@ -65,6 +65,7 @@ root_trees() {
     fi
     rooted_tree=$(echo "$output" | head -1)
     echo "$rooted_tree" > "${gtree_file_out%.newick}_rooted.newick"
+    echo "${gtree_file_out%.newick}_rooted.newick"
   done
 }
 
