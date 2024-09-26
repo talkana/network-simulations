@@ -51,23 +51,28 @@ newick_cleanup() {
 root_trees() {
   gtree_files=$(find "$output_dir" -type f -name "*_tree_ML")
   for gtree_file in $gtree_files; do
-    # file cleanup
     gtree_file_out="${gtree_file%.newick}_cleaned.newick"
     newick_cleanup "$gtree_file" "$gtree_file_out"
-    dir_path=$(dirname "gtree_file")
+    dir_path=$(dirname "$gtree_file")
     stree_file="$dir_path/s_tree.trees"
     stree_file_out="${stree_file%.trees}_cleaned.newick"
     newick_cleanup "$stree_file" "$stree_file_out"
-    # rooting
-    urec_command="urec -G "{gtree_file_out}" -S "{stree_file_out}" -um -rmp1"
+    urec_command="urec -G $gtree_file_out -S $stree_file_out -um -rmp1"
     output=$(eval "$urec_command" 2>&1)
     if [ $? -ne 0 ]; then
-        continue
+      continue
     fi
-    rooted_tree=$(echo "$output" | awk '{print $1}')
-    echo "$rooted_tree" > "${gtree_file%.newick}_rooted.newick"
+        rooted_tree=$(echo "$output" | awk '{print $1}')
+    echo "$rooted_tree" > "${gtree_file_out%.newick}_rooted.newick"
   done
-  }
+}
+
+delete_dirs_with_no_rooted_trees(){
+  for l in 100 200; do
+    for r in 5 10; do
+      for ils in "moderate" "high"; do
+        base_dir="l${l}_r${r}_ILS_${ils}"
+}
 
 main() {
   output_dir="simulations_bijective"
