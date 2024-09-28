@@ -82,7 +82,6 @@ reformat_results() {
             cp "${curr_subdir}/network" "$output_network"
             for tree_file in "${selected_files[@]}"; do
               cat "$tree_file" >> "$output_trees"
-              echo "" >> "$output_trees"
             done
             j=$((j + 1))
           fi
