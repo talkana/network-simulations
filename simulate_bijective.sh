@@ -1,14 +1,12 @@
 #!/bin/bash
 
 simulate_networks() {
-  height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
-  networks_per_parameter_set=10
   network_commands=()
-  for r in 5 10 15 20; do
-    for l in 50 100 150 200; do
-      for h in 10000000 500000; do
+  for r in "${rs[@]}"; do
+    for l in "${ls[@]}"; do
+      for h in "${hs[@]}"; do
         curr_dir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}"
-        network_commands+=("python3 network_sim.py -o '$curr_dir' -r $r -l $l -n $networks_per_parameter_set -d $displayed_trees_per_network_to_simulate -ht $h")
+        network_commands+=("python3 network_sim.py -o '$curr_dir' -r $r -l $l -n $networks_per_parameter_set_to_simulate -d $displayed_trees_per_network_to_simulate -ht $h")
       done
     done
   done
@@ -69,17 +67,51 @@ root_trees() {
   done
 }
 
+reformat_results(){
+  network_commands=()
+  j=0
+  for r in "${rs[@]}"; do
+    for l in "${ls[@]}"; do
+      for h in "${hs[@]}"; do
+          for i in $(seq 1 "$networks_per_parameter_set_to_simulate"); do
+            curr_dir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}/${i}"
+            rooted_files=($(find "$curr_dir" -type f -name '*rooted*'))
+            if [ "${#rooted_files[@]}" -gt "$displayed_trees_per_network" ] && [ "$j" -lt "$networks_per_parameter_set" ]; then
+              selected_files=("${rooted_files[@]:0:$displayed_trees_per_network}")
+              output_network="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.network"
+              output_trees="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.trees"
+              cp "${curr_dir}/network" "$output_network"
+              for tree_file in "${selected_files[@]}"; do
+                cat "$tree_file" >> "$output_trees"
+                echo "" >> "$output_trees"
+              done
+              j=$((j + 1))
+            fi
+          done
+      done
+    done
+  done
+
+
+}
+
 main() {
   output_dir="simulations_bijective"
   parameters_path="parameters"
   max_processes=20
-  displayed_trees_per_network_required=250
+  displayed_trees_per_network=250
   displayed_trees_per_network_to_simulate=350 # added margin for cases where tree inferred from sequence is not bijective
+  height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
+  networks_per_parameter_set=10
+  networks_per_parameter_set_to_simulate=15
+  rs=(5 10 15 20)
+  ls=(50 100 150 200)
+  hs=(10000000 500000)
   seed=42
-#  mkdir -p "$output_dir"
-#  simulate_networks
-#  simulate_trees_and_sequences
-#  infer_trees
+  mkdir -p "$output_dir"
+  simulate_networks
+  simulate_trees_and_sequences
+  infer_trees
   root_trees
 }
 
