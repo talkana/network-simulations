@@ -5,8 +5,10 @@ simulate_networks() {
   for r in "${rs[@]}"; do
     for l in "${ls[@]}"; do
       for h in "${hs[@]}"; do
-        curr_dir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}"
-        network_commands+=("python3 network_sim.py -o '$curr_dir' -r $r -l $l -n $networks_per_parameter_set_to_simulate -d $displayed_trees_per_network_to_simulate -ht $h")
+        for seq_type in "${seq_types[@]}"; do
+          curr_dir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}_${seq_type}"
+          network_commands+=("python3 network_sim.py -o '$curr_dir' -r $r -l $l -n $networks_per_parameter_set_to_simulate -d $displayed_trees_per_network_to_simulate -ht $h")
+        done
       done
     done
   done
@@ -17,14 +19,19 @@ simulate_networks() {
 simulate_trees_and_sequences() {
   simphy_commands=()
   indelible_commands=()
+
   for sp in "$parameters_path"/*.simphy; do
-    for ip in "$parameters_path"/*.indelible; do
-      tree_files=$(find "$output_dir" -type f -name "*displayed_trees")
-      for tree_file in $tree_files; do
-        reppath=$(dirname "$tree_file")
-        simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} -rs ${displayed_trees_per_network_to_simulate} -I ${sp}")
-        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${ip} ${seed} 1")
-      done
+    tree_files=$(find "$output_dir" -type f -name "*displayed_trees")
+
+    for tree_file in $tree_files; do
+      reppath=$(dirname "$tree_file")
+      simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} -rs ${displayed_trees_per_network_to_simulate} -I ${sp}")
+
+      if [[ "$reppath" == *"exons"* ]]; then
+        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${parameters_path}/exons.txt ${seed} 1")
+      else
+        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${parameters_path}/introns.txt ${seed} 1")
+      fi
     done
   done
   printf "%s\n" "${simphy_commands[@]}" | xargs -P "$max_processes" -I {} bash -c '{}'
@@ -71,20 +78,22 @@ reformat_results() {
   for r in "${rs[@]}"; do
     for l in "${ls[@]}"; do
       for h in "${hs[@]}"; do
-        j=0
-        for i in $(seq 1 "$networks_per_parameter_set_to_simulate"); do
-          curr_subdir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}/${i}"
-          rooted_files=($(find "$curr_subdir" -type f -name '*rooted*'))
-          if [ "${#rooted_files[@]}" -gt "$displayed_trees_per_network" ] && [ "$j" -lt "$networks_per_parameter_set" ]; then
-            selected_files=("${rooted_files[@]:0:$displayed_trees_per_network}")
-            output_network="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.network"
-            output_trees="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.trees"
-            cp "${curr_subdir}/network" "$output_network"
-            for tree_file in "${selected_files[@]}"; do
-              cat "$tree_file" >> "$output_trees"
-            done
-            j=$((j + 1))
-          fi
+        for seq_type in "${seq_types[@]}"; do
+          j=0
+          for i in $(seq 1 "$networks_per_parameter_set_to_simulate"); do
+            curr_subdir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}_${seq_type}/${i}"
+            rooted_files=($(find "$curr_subdir" -type f -name '*rooted*'))
+            if [ "${#rooted_files[@]}" -gt "$displayed_trees_per_network" ] && [ "$j" -lt "$networks_per_parameter_set" ]; then
+              selected_files=("${rooted_files[@]:0:$displayed_trees_per_network}")
+              output_network="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${seq_type}_${j}.network"
+              output_trees="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${seq_type}_${j}.trees"
+              cp "${curr_subdir}/network" "$output_network"
+              for tree_file in "${selected_files[@]}"; do
+                cat "$tree_file" >> "$output_trees"
+              done
+              j=$((j + 1))
+            fi
+          done
         done
       done
     done
@@ -129,8 +138,9 @@ main() {
   # 2. Parameters from Molloy and Warnow 2018
   hs=(10000000 500000)
   height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
+  seq_types=("introns", "exons")
   parameters_path="parameters"
-  
+
   # 3. Adding margins for cases where tree inferred from sequence is not bijective
   displayed_trees_per_network_to_simulate=$(echo "1.75 * $displayed_trees_per_network" | bc | awk '{print int($1)}')
   networks_per_parameter_set_to_simulate=$(echo "1.5 * $networks_per_parameter_set" | bc | awk '{print int($1)}')
