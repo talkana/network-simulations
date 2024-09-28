@@ -1,0 +1,1 @@
+./simulate_bijective.sh --output_dir simulations_rf --summary_dir simulations_rf_summary --max_processes 20 --displayed_trees_per_network 1 --networks_per_parameter_set 50 --seed 42 --rs 11 --ls 12 20
