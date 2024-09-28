@@ -28,9 +28,9 @@ simulate_trees_and_sequences() {
       simphy_commands+=("simphy -o ${reppath} -sr ${tree_file} -rs ${displayed_trees_per_network_to_simulate} -I ${sp}")
 
       if [[ "$reppath" == *"exons"* ]]; then
-        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${parameters_path}/exons.txt ${seed} 1")
+        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${parameters_path}/exons.indelible ${seed} 1")
       else
-        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${parameters_path}/introns.txt ${seed} 1")
+        indelible_commands+=("./INDELIble_wrapper.pl ${reppath} ${parameters_path}/introns.indelible ${seed} 1")
       fi
     done
   done
