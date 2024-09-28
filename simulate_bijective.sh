@@ -123,33 +123,19 @@ parse_arguments() {
 }
 
 main() {
-  # Call the argument parsing function
+  # 1. User's parameters
   parse_arguments "$@"
 
-  # 1. Parameters from Molloy and Warnow 2018
+  # 2. Parameters from Molloy and Warnow 2018
   hs=(10000000 500000)
   height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
   parameters_path="parameters"
-
-  # 2. Other parameters
-  # The parameters have been set from command-line arguments
-
+  
   # 3. Adding margins for cases where tree inferred from sequence is not bijective
   displayed_trees_per_network_to_simulate=$(echo "1.75 * $displayed_trees_per_network" | bc | awk '{print int($1)}')
   networks_per_parameter_set_to_simulate=$(echo "1.5 * $networks_per_parameter_set" | bc | awk '{print int($1)}')
   mkdir -p "$output_dir"
   mkdir -p "$summary_dir"
-
-  # Output the values for verification
-  echo "Output Directory: $output_dir"
-  echo "Summary Directory: $summary_dir"
-  echo "Max Processes: $max_processes"
-  echo "Displayed Trees per Network: $displayed_trees_per_network"
-  echo "Networks per Parameter Set: $networks_per_parameter_set"
-  echo "Seed: $seed"
-  echo "RS values: ${rs[@]}"
-  echo "LS values: ${ls[@]}"
-
   simulate_networks
   simulate_trees_and_sequences
   infer_trees
