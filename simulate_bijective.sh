@@ -68,11 +68,11 @@ root_trees() {
 
 reformat_results() {
   network_commands=()
-  j=0
   for r in "${rs[@]}"; do
     for l in "${ls[@]}"; do
       for h in "${hs[@]}"; do
         for i in $(seq 1 "$networks_per_parameter_set_to_simulate"); do
+          j=0
           curr_subdir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}/${i}"
           rooted_files=($(find "$curr_subdir" -type f -name '*rooted*'))
           if [ "${#rooted_files[@]}" -gt "$displayed_trees_per_network" ] && [ "$j" -lt "$networks_per_parameter_set" ]; then
