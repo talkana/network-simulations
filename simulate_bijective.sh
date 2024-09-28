@@ -110,7 +110,7 @@ main() {
 
   # 3. Adding margins for cases where tree inferred from sequence is not bijective
   displayed_trees_per_network_to_simulate=$(echo "1.75 * $displayed_trees_per_network" | bc | awk '{print int($1)}')
-  networks_per_parameter_set_to_simulate=$(echo "1.5 * $networks_per_parameter_set_to_simulate" | bc | awk '{print int($1)}')
+  networks_per_parameter_set_to_simulate=$(echo "1.5 * $networks_per_parameter_set" | bc | awk '{print int($1)}')
   mkdir -p "$output_dir"
   mkdir -p "$summary_dir"
   simulate_networks
