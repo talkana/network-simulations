@@ -49,7 +49,6 @@ newick_cleanup() {
 root_trees() {
   gtree_files=$(find "$output_dir" -type f -name "*_tree_ML")
   for gtree_file in $gtree_files; do
-    curr_dir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}"
     gtree_file_out="${gtree_file%.newick}_cleaned.newick"
     newick_cleanup "$gtree_file" "$gtree_file_out"
     dir_path=$(dirname "$gtree_file")
@@ -74,13 +73,13 @@ reformat_results(){
     for l in "${ls[@]}"; do
       for h in "${hs[@]}"; do
           for i in $(seq 1 "$networks_per_parameter_set_to_simulate"); do
-            curr_dir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}/${i}"
-            rooted_files=($(find "$curr_dir" -type f -name '*rooted*'))
+            curr_subdir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}/${i}"
+            rooted_files=($(find "$curr_subdir" -type f -name '*rooted*'))
             if [ "${#rooted_files[@]}" -gt "$displayed_trees_per_network" ] && [ "$j" -lt "$networks_per_parameter_set" ]; then
               selected_files=("${rooted_files[@]:0:$displayed_trees_per_network}")
               output_network="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.network"
               output_trees="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.trees"
-              cp "${curr_dir}/network" "$output_network"
+              cp "${curr_subdir}/network" "$output_network"
               for tree_file in "${selected_files[@]}"; do
                 cat "$tree_file" >> "$output_trees"
                 echo "" >> "$output_trees"
@@ -113,6 +112,7 @@ main() {
   displayed_trees_per_network_to_simulate=$(echo "1.75 * $displayed_trees_per_network" | bc | awk '{print int($1)}')
   networks_per_parameter_set_to_simulate=$(echo "1.5 * $networks_per_parameter_set_to_simulate" | bc | awk '{print int($1)}')
   mkdir -p "$output_dir"
+  mkdir -p "$summary_dir"
   simulate_networks
   simulate_trees_and_sequences
   infer_trees
