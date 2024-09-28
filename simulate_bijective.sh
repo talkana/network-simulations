@@ -94,24 +94,30 @@ reformat_results(){
 }
 
 main() {
+  # 1. Parameters from Molloy and Warnow 2018
+  hs=(10000000 500000)
+  height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
+  parameters_path="parameters"
+
+  # 2. Other parameters
   output_dir="simulations_bijective"
   summary_dir="simulations_bijective_summary"
-  parameters_path="parameters"
   max_processes=20
   displayed_trees_per_network=250
-  displayed_trees_per_network_to_simulate=350 # added margin for cases where tree inferred from sequence is not bijective
-  height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
   networks_per_parameter_set=10
-  networks_per_parameter_set_to_simulate=15
   rs=(5 10 15 20)
   ls=(50 100 150 200)
-  hs=(10000000 500000)
   seed=42
+
+  # 3. Adding margins for cases where tree inferred from sequence is not bijective
+  displayed_trees_per_network_to_simulate=$(echo "scale=0; 1.75 * $displayed_trees_per_network / 1" | bc)
+  networks_per_parameter_set_to_simulate=$(echo "scale=0; 1.5 * $networks_per_parameter_set_to_simulate / 1" | bc)
   mkdir -p "$output_dir"
   simulate_networks
   simulate_trees_and_sequences
   infer_trees
   root_trees
+  reformat_results
 }
 
 main
