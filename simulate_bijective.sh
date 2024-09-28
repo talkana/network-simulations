@@ -69,7 +69,6 @@ root_trees() {
     fi
     rooted_tree=$(echo "$output" | head -1)
     echo "$rooted_tree" > "${gtree_file_out%.newick}_rooted.newick"
-    echo "${gtree_file_out%.newick}_rooted.newick"
   done
 }
 
@@ -138,7 +137,7 @@ main() {
   # 2. Parameters from Molloy and Warnow 2018
   hs=(10000000 500000)
   height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
-  seq_types=("introns", "exons")
+  seq_types=("introns" "exons")
   parameters_path="parameters"
 
   # 3. Adding margins for cases where tree inferred from sequence is not bijective
