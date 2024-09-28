@@ -91,25 +91,57 @@ reformat_results() {
   done
 }
 
+usage() {
+  echo "Usage: $0 --output_dir OUTPUT_DIR --summary_dir SUMMARY_DIR --max_processes MAX_PROCESSES --displayed_trees_per_network DISPLAYED_TREES --networks_per_parameter_set NETWORKS_PER_SET --seed SEED --rs RS_VALUES --ls LS_VALUES"
+  exit 1
+}
+
+# Function to parse command-line arguments
+parse_arguments() {
+  while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+      --output_dir) output_dir="$2"; shift 2 ;;
+      --summary_dir) summary_dir="$2"; shift 2 ;;
+      --max_processes) max_processes="$2"; shift 2 ;;
+      --displayed_trees_per_network) displayed_trees_per_network="$2"; shift 2 ;;
+      --networks_per_parameter_set) networks_per_parameter_set="$2"; shift 2 ;;
+      --seed) seed="$2"; shift 2 ;;
+      --rs) shift; while [[ "$#" -gt 0 && ! "$1" =~ ^-- ]]; do rs+=("$1"); shift; done ;;
+      --ls) shift; while [[ "$#" -gt 0 && ! "$1" =~ ^-- ]]; do ls+=("$1"); shift; done ;;
+      *) usage ;;
+    esac
+  done
+
+  if [ -z "$output_dir" ] || [ -z "$summary_dir" ] || [ -z "$max_processes" ] || [ -z "$displayed_trees_per_network" ] || [ -z "$networks_per_parameter_set" ] || [ -z "$seed" ]; then
+    usage
+  fi
+
+  if [ ${#rs[@]} -eq 0 ] || [ ${#ls[@]} -eq 0 ]; then
+    echo "Error: Both reticulation numbers and leaf numbers must be provided."
+    usage
+  fi
+}
+
 main() {
   # 1. Parameters from Molloy and Warnow 2018
   hs=(10000000 500000)
   height_to_name=( [10000000]="moderate" [500000]="veryhigh" )
   parameters_path="parameters"
-
-  # 2. Other parameters
-  output_dir="simulations_bijective"
-  summary_dir="simulations_bijective_summary"
-  max_processes=20
-  displayed_trees_per_network=250
-  networks_per_parameter_set=10
-  rs=(5 10 15 20)
-  ls=(50 100 150 200)
-  seed=42
-
-  # 3. Adding margins for cases where tree inferred from sequence is not bijective
+  # 2. Adding margins for cases where tree inferred from sequence is not bijective
   displayed_trees_per_network_to_simulate=$(echo "1.75 * $displayed_trees_per_network" | bc | awk '{print int($1)}')
   networks_per_parameter_set_to_simulate=$(echo "1.5 * $networks_per_parameter_set" | bc | awk '{print int($1)}')
+  
+  # Output the values for verification
+  echo "Output Directory: $output_dir"
+  echo "Summary Directory: $summary_dir"
+  echo "Max Processes: $max_processes"
+  echo "Displayed Trees per Network: $displayed_trees_per_network"
+  echo "Networks per Parameter Set: $networks_per_parameter_set"
+  echo "Seed: $seed"
+  echo "RS values: ${rs[@]}"
+  echo "LS values: ${ls[@]}"
+
+
   mkdir -p "$output_dir"
   mkdir -p "$summary_dir"
   simulate_networks
