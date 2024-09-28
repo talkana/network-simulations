@@ -66,27 +66,27 @@ root_trees() {
   done
 }
 
-reformat_results(){
+reformat_results() {
   network_commands=()
   j=0
   for r in "${rs[@]}"; do
     for l in "${ls[@]}"; do
       for h in "${hs[@]}"; do
-          for i in $(seq 1 "$networks_per_parameter_set_to_simulate"); do
-            curr_subdir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}/${i}"
-            rooted_files=($(find "$curr_subdir" -type f -name '*rooted*'))
-            if [ "${#rooted_files[@]}" -gt "$displayed_trees_per_network" ] && [ "$j" -lt "$networks_per_parameter_set" ]; then
-              selected_files=("${rooted_files[@]:0:$displayed_trees_per_network}")
-              output_network="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.network"
-              output_trees="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.trees"
-              cp "${curr_subdir}/network" "$output_network"
-              for tree_file in "${selected_files[@]}"; do
-                cat "$tree_file" >> "$output_trees"
-                echo "" >> "$output_trees"
-              done
-              j=$((j + 1))
-            fi
-          done
+        for i in $(seq 1 "$networks_per_parameter_set_to_simulate"); do
+          curr_subdir="${output_dir}/l${l}_r${r}_ILS_${height_to_name[$h]}/${i}"
+          rooted_files=($(find "$curr_subdir" -type f -name '*rooted*'))
+          if [ "${#rooted_files[@]}" -gt "$displayed_trees_per_network" ] && [ "$j" -lt "$networks_per_parameter_set" ]; then
+            selected_files=("${rooted_files[@]:0:$displayed_trees_per_network}")
+            output_network="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.network"
+            output_trees="${summary_dir}/r${r}_n${l}_ILS_${height_to_name[$h]}_${j}.trees"
+            cp "${curr_subdir}/network" "$output_network"
+            for tree_file in "${selected_files[@]}"; do
+              cat "$tree_file" >> "$output_trees"
+              echo "" >> "$output_trees"
+            done
+            j=$((j + 1))
+          fi
+        done
       done
     done
   done
