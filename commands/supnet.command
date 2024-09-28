@@ -1,0 +1,1 @@
+./simulate_bijective.sh --output_dir simulations_supnet --summary_dir simulations_supnet_summary --max_processes 20 --displayed_trees_per_network 250 --networks_per_parameter_set 10 --seed 42 --rs 5 10 15 20 --ls 50 100 150 200
