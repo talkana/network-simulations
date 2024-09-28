@@ -91,12 +91,11 @@ reformat_results(){
       done
     done
   done
-
-
 }
 
 main() {
   output_dir="simulations_bijective"
+  summary_dir="simulations_bijective_summary"
   parameters_path="parameters"
   max_processes=20
   displayed_trees_per_network=250
